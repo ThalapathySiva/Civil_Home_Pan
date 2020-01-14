@@ -19,30 +19,7 @@ class _ResultScreenState extends State<ResultScreen> {
   List<PlanDetailItem> planList;
   @override
   void initState() {
-    getPlans();
     super.initState();
-  }
-
-  getPlans() {
-    FirebaseDatabase.instance
-        .reference()
-        .child("browsePlans")
-        .once()
-        .then((DataSnapshot snapshot) {
-      datas = snapshot.value;
-      print(datas);
-      List filteredList = datas
-          .sublist(1)
-          .where((i) =>
-              i["bhk"] == int.parse(widget.inputs["noOfBhk"]) &&
-              i["sqft"] == widget.inputs["sizeOfLand"] &&
-              i["storey"] == int.parse(widget.inputs["noOfStorey"]))
-          .toList();
-
-      print("filter" + filteredList.toString());
-
-      planList = filteredList.map((f) => PlanDetailItem.fromJson(f)).toList();
-    });
   }
 
   @override
@@ -56,8 +33,32 @@ class _ResultScreenState extends State<ResultScreen> {
   }
 
   Widget layout() {
+    FirebaseDatabase.instance
+        .reference()
+        .child("browsePlans")
+        .once()
+        .then((DataSnapshot snapshot) {
+      datas = snapshot.value;
+      print("Datas : " + datas.toString());
+      List filteredList = datas
+          .sublist(1)
+          .where((i) =>
+              i["bhk"] == int.parse(widget.inputs["noOfBhk"]) &&
+              i["sqft"] == widget.inputs["sizeOfLand"] &&
+              i["storey"] == int.parse(widget.inputs["noOfStorey"]))
+          .toList();
+
+      print("Filter : " + filteredList.toString());
+      if (filteredList != null) {
+        planList = filteredList.map((f) => PlanDetailItem.fromJson(f)).toList();
+      }
+    });
     if (planList == null) {
-      return Container();
+      return Center(
+          child: Text(
+        "Not Loaded",
+        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+      ));
     }
     if (planList.length == 0) {
       return Center(
@@ -72,7 +73,7 @@ class _ResultScreenState extends State<ResultScreen> {
         gridDelegate:
             SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
         itemBuilder: (BuildContext context, int index) {
-          print("images " + planList[index].image);
+          print("Images : " + planList[index].image);
           return GridTile(
             child: InkResponse(
               enableFeedback: true,
