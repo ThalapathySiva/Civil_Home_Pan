@@ -15,10 +15,10 @@ class ResultScreen extends StatefulWidget {
 }
 
 class _ResultScreenState extends State<ResultScreen> {
-  List datas;
   List<PlanDetailItem> planList;
   @override
   void initState() {
+    getPlans();
     super.initState();
   }
 
@@ -32,13 +32,13 @@ class _ResultScreenState extends State<ResultScreen> {
     );
   }
 
-  Widget layout() {
+  getPlans() {
     FirebaseDatabase.instance
         .reference()
         .child("browsePlans")
         .once()
         .then((DataSnapshot snapshot) {
-      datas = snapshot.value;
+      List datas = snapshot.value;
       print("Datas : " + datas.toString());
       List filteredList = datas
           .sublist(1)
@@ -50,9 +50,15 @@ class _ResultScreenState extends State<ResultScreen> {
 
       print("Filter : " + filteredList.toString());
       if (filteredList != null) {
-        planList = filteredList.map((f) => PlanDetailItem.fromJson(f)).toList();
+        setState(() {
+          planList =
+              filteredList.map((f) => PlanDetailItem.fromJson(f)).toList();
+        });
       }
     });
+  }
+
+  Widget layout() {
     if (planList == null) {
       return Center(
           child: Text(
