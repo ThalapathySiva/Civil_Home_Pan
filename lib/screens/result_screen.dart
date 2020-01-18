@@ -60,11 +60,7 @@ class _ResultScreenState extends State<ResultScreen> {
 
   Widget layout() {
     if (planList == null) {
-      return Center(
-          child: Text(
-        "Not Loaded",
-        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-      ));
+      return Center(child: CupertinoActivityIndicator());
     }
     if (planList.length == 0) {
       return Center(
